@@ -31,7 +31,7 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['phone' => $request->phone, 'password' => $request->password])) {
             $request->session()->regenerate();
 
             return redirect()->intended('/');
