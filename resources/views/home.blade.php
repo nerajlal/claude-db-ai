@@ -74,8 +74,27 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.chat_id) {
+                    if (data.chat_id && !currentChatId) {
                         currentChatId = data.chat_id;
+                        chatHasFile = true;
+                        const newChatItem = document.createElement('div');
+                        newChatItem.className = 'flex items-center justify-between p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer relative';
+                        newChatItem.setAttribute('x-data', '{ open: false }');
+                        newChatItem.innerHTML = `
+                            <span class="flex-grow" onclick="loadChatHistory(${data.chat_id})">${file.name}</span>
+                            <button class="ml-2" @click="open = !open">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                                <div class="py-1">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="renameChat(${data.chat_id}, event)">Rename</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="deleteChat(${data.chat_id}, event)">Delete</a>
+                                </div>
+                            </div>
+                        `;
+                        document.querySelector('.space-y-1').prepend(newChatItem);
                     }
                     if (data.reply) {
                         const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
@@ -95,7 +114,6 @@
                         `;
                         chatMessages.appendChild(assistantMessage);
                     }
-                    alert(data.message);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -233,17 +251,32 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
+                },
+                body: JSON.stringify({ name: 'New Chat' })
             })
             .then(response => response.json())
             .then(data => {
                 currentChatId = data.id;
+                chatHasFile = false;
                 document.getElementById('chat-messages').querySelector('.space-y-6').innerHTML = '';
                 document.querySelector('#fileUpload + button span').textContent = 'Upload .sql';
                 const newChatItem = document.createElement('div');
-                newChatItem.className = 'p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer';
-                newChatItem.textContent = `Chat #${currentChatId}`;
-                newChatItem.onclick = () => loadChatHistory(currentChatId);
+                newChatItem.className = 'flex items-center justify-between p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer relative';
+                newChatItem.setAttribute('x-data', '{ open: false }');
+                newChatItem.innerHTML = `
+                    <span class="flex-grow" onclick="loadChatHistory(${data.id})">${data.name}</span>
+                    <button class="ml-2" @click="open = !open">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                        <div class="py-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="renameChat(${data.id}, event)">Rename</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="deleteChat(${data.id}, event)">Delete</a>
+                        </div>
+                    </div>
+                `;
                 document.querySelector('.space-y-1').prepend(newChatItem);
             });
         }

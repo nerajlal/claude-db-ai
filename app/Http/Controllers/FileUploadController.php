@@ -26,7 +26,10 @@ class FileUploadController extends Controller
         $chatId = $request->input('chat_id');
 
         if (!$chatId) {
-            $chat = Chat::create(['user_id' => $user->id]);
+            $chat = Chat::create([
+                'user_id' => $user->id,
+                'name' => $filename,
+            ]);
             $chatId = $chat->id;
         } else {
             $chat = Chat::findOrFail($chatId);
