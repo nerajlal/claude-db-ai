@@ -12,7 +12,9 @@ class DbController extends Controller
 {
     public function index()
     {
-        return view('home');
+        $user = Auth::user();
+        $chats = \App\Models\Chat::where('user_id', $user->id)->latest()->get();
+        return view('home', compact('chats'));
     }
 
     public function uploadDb(Request $request)

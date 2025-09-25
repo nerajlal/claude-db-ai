@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/process-query', [DbController::class, 'processQuery'])->name('query.process');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
     Route::post('/chat', [ChatController::class, 'chat'])->name('chat');
+    Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');
 });
 
 

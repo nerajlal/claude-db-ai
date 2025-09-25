@@ -34,5 +34,158 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let currentChatId = null;
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+
+                // Update button text to show selected file
+                const button = event.target.parentNode.querySelector('button span');
+                button.textContent = `📄 ${fileName}`;
+
+                // Add visual feedback
+                const uploadButton = event.target.parentNode.querySelector('button');
+                uploadButton.classList.remove('border-gray-300', 'dark:border-gray-600');
+                uploadButton.classList.add('bg-green-700', 'border-green-600');
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('chat_id', currentChatId);
+
+                fetch('{{ route('upload') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.chat_id) {
+                        currentChatId = data.chat_id;
+                    }
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('File upload failed.');
+                });
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message) {
+                const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
+
+                // Add user message to chat
+                const userMessage = document.createElement('div');
+                userMessage.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-6';
+                userMessage.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold text-white">
+                            NL
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-lg">${message}</p>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(userMessage);
+
+                input.value = '';
+
+                fetch('{{ route('chat') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ message: message, chat_id: currentChatId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.chat_id) {
+                        currentChatId = data.chat_id;
+                    }
+
+                    const assistantMessage = document.createElement('div');
+                    assistantMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
+                    assistantMessage.innerHTML = `
+                        <div class="flex items-start space-x-3 mb-4">
+                            <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <p class="text-lg">${data.reply}</p>
+                        </div>
+                    `;
+                    chatMessages.appendChild(assistantMessage);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function loadChatHistory(chatId) {
+            currentChatId = chatId;
+            const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
+            chatMessages.innerHTML = '';
+
+            fetch(`/chat/history/${chatId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.messages.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        if (message.sender === 'user') {
+                            messageElement.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-6';
+                            messageElement.innerHTML = `
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold text-white">
+                                        NL
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-lg">${message.content}</p>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            messageElement.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
+                            messageElement.innerHTML = `
+                                <div class="flex items-start space-x-3 mb-4">
+                                    <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="space-y-6">
+                                    <p class="text-lg">${message.content}</p>
+                                </div>
+                            `;
+                        }
+                        chatMessages.appendChild(messageElement);
+                    });
+                });
+        }
+    </script>
 </body>
 </html>
