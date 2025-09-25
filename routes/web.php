@@ -17,7 +17,3 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-
-Route::get('/test', function () {
-    return view('test'); // this will load resources/views/test.blade.php
-})->name('test');
