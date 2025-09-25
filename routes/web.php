@@ -15,3 +15,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/upload-db', [DbController::class, 'uploadDb'])->name('upload.db');
     Route::post('/process-query', [DbController::class, 'processQuery'])->name('query.process');
 });
+
+
+
+Route::get('/test', function () {
+    return view('test'); // this will load resources/views/test.blade.php
+})->name('test');
