@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/chat', [ChatController::class, 'chat'])->name('chat');
     Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');
     Route::post('/chat/new', [ChatController::class, 'newChat'])->name('chat.new');
+    Route::post('/chat/rename', [ChatController::class, 'renameChat'])->name('chat.rename');
 });
 
 

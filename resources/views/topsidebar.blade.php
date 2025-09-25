@@ -136,8 +136,13 @@
                     <h3 class="text-sm text-gray-600 dark:text-gray-400 mb-2">SQL Chats</h3>
                     <div class="space-y-1">
                         @foreach($chats as $chat)
-                            <div class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer" onclick="loadChatHistory({{ $chat->id }})">
-                                Chat #{{ $chat->id }}
+                            <div class="flex items-center justify-between p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer">
+                                <span class="flex-grow" onclick="loadChatHistory({{ $chat->id }})">{{ $chat->name }}</span>
+                                <button class="ml-2" onclick="renameChat({{ $chat->id }}, event)">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                    </svg>
+                                </button>
                             </div>
                         @endforeach
                     </div>

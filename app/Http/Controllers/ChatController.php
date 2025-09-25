@@ -72,4 +72,24 @@ class ChatController extends Controller
         $chat = Chat::create(['user_id' => $user->id]);
         return response()->json($chat);
     }
+
+    public function renameChat(Request $request)
+    {
+        $request->validate([
+            'chat_id' => 'required|exists:chats,id',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $chat = Chat::findOrFail($request->input('chat_id'));
+        $user = Auth::user();
+
+        if ($chat->user_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $chat->name = $request->input('name');
+        $chat->save();
+
+        return response()->json(['message' => 'Chat renamed successfully']);
+    }
 }

@@ -245,6 +245,28 @@
             });
         }
 
+        function renameChat(chatId, event) {
+            event.stopPropagation();
+            const newName = prompt('Enter a new name for the chat:');
+            if (newName) {
+                fetch('{{ route('chat.rename') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ chat_id: chatId, name: newName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    }
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
         });
