@@ -34,16 +34,23 @@
                 uploadButton.classList.remove('border-gray-300', 'dark:border-gray-600');
                 uploadButton.classList.add('bg-green-700', 'border-green-600');
                 
-                // Simulate file processing
-                setTimeout(() => {
-                    alert(`SQL file "${fileName}" uploaded successfully!\nType: ${fileExtension.toUpperCase()} database file`);
-                }, 500);
-                
-                console.log('SQL file uploaded:', {
-                    name: fileName,
-                    size: file.size,
-                    type: file.type,
-                    extension: fileExtension
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('{{ route('upload') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('File upload failed.');
                 });
             }
         }

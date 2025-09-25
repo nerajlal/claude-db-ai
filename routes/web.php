@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DbController;
+use App\Http\Controllers\FileUploadController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -14,6 +15,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [DbController::class, 'index'])->name('home');
     Route::post('/upload-db', [DbController::class, 'uploadDb'])->name('upload.db');
     Route::post('/process-query', [DbController::class, 'processQuery'])->name('query.process');
+    Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
 });
 
 
