@@ -14,11 +14,11 @@
             </div>
 
             <!-- Input Area -->
-            <div class="p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-chat-sidebar">
+            <div id="inputArea" class="hidden p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-chat-sidebar">
                 <div class="max-w-4xl mx-auto">
                     <div class="bg-gray-100 dark:bg-chat-input rounded-lg flex items-center p-3">
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             id="messageInput"
                             placeholder="Ask about SQL queries, database optimization, schema design, or troubleshooting..."
                             class="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none"
@@ -65,6 +65,12 @@
                     formData.append('chat_id', currentChatId);
                 }
 
+                const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
+                const loadingMessage = document.createElement('div');
+                loadingMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
+                loadingMessage.innerHTML = `<p class="text-lg">Database is uploading...</p>`;
+                chatMessages.appendChild(loadingMessage);
+
                 fetch('{{ route('upload') }}', {
                     method: 'POST',
                     headers: {
@@ -74,6 +80,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    loadingMessage.remove();
                     if (data.chat_id && !currentChatId) {
                         currentChatId = data.chat_id;
                         chatHasFile = true;
@@ -97,7 +104,6 @@
                         document.querySelector('.space-y-1').prepend(newChatItem);
                     }
                     if (data.reply) {
-                        const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
                         const assistantMessage = document.createElement('div');
                         assistantMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
                         assistantMessage.innerHTML = `
@@ -113,6 +119,7 @@
                             </div>
                         `;
                         chatMessages.appendChild(assistantMessage);
+                        document.getElementById('inputArea').classList.remove('hidden');
                     }
                 })
                 .catch(error => {
@@ -206,9 +213,11 @@
                     if (data.files && data.files.length > 0) {
                         uploadButtonSpan.textContent = `📄 ${data.files[0].filename}`;
                         chatHasFile = true;
+                        document.getElementById('inputArea').classList.remove('hidden');
                     } else {
                         uploadButtonSpan.textContent = 'Upload .sql';
                         chatHasFile = false;
+                        document.getElementById('inputArea').classList.add('hidden');
                     }
 
                     data.messages.forEach(message => {
