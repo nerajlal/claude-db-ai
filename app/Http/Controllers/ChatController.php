@@ -23,8 +23,12 @@ class ChatController extends Controller
         $chatId = $request->input('chat_id');
         $user = Auth::user();
 
-        if (!$chatId) {
-            $chat = Chat::create(['user_id' => $user->id]);
+        $isNewChat = !$chatId;
+        if ($isNewChat) {
+            $chat = Chat::create([
+                'user_id' => $user->id,
+                'name' => substr($messageContent, 0, 20)
+            ]);
             $chatId = $chat->id;
         } else {
             $chat = Chat::findOrFail($chatId);
@@ -61,7 +65,17 @@ class ChatController extends Controller
             'content' => $reply,
         ]);
 
-        return response()->json(['reply' => $reply, 'chat_id' => $chatId]);
+        $responseData = ['reply' => $reply];
+        if ($isNewChat) {
+            $responseData['chat'] = [
+                'id' => $chat->id,
+                'name' => $chat->name
+            ];
+        } else {
+            $responseData['chat_id'] = $chatId;
+        }
+
+        return response()->json($responseData);
     }
 
     public function getChatHistory($chatId)
