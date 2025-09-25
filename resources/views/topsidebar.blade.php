@@ -84,7 +84,7 @@
                 }
             });
 
-            const upgradeButton = document.querySelector('.font-medium');
+            const upgradeButton = document.getElementById('upgradeProButton');
             const modal = document.getElementById('upgradeModal');
             const closeModal = document.getElementById('closeModal');
 

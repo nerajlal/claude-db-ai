@@ -37,11 +37,12 @@
 
     <script>
         let currentChatId = null;
+        let chatHasFile = false;
 
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
-                if (currentChatId && document.querySelector('#fileUpload + button span').textContent !== 'Upload .sql') {
+                if (chatHasFile) {
                     alert('A file has already been uploaded to this chat. Please start a new chat to upload a new file.');
                     return;
                 }
@@ -186,8 +187,10 @@
                 .then(data => {
                     if (data.files && data.files.length > 0) {
                         uploadButtonSpan.textContent = `📄 ${data.files[0].filename}`;
+                        chatHasFile = true;
                     } else {
                         uploadButtonSpan.textContent = 'Upload .sql';
+                        chatHasFile = false;
                     }
 
                     data.messages.forEach(message => {
