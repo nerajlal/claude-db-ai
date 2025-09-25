@@ -28,6 +28,11 @@ class FileUploadController extends Controller
         if (!$chatId) {
             $chat = Chat::create(['user_id' => $user->id]);
             $chatId = $chat->id;
+        } else {
+            $chat = Chat::findOrFail($chatId);
+            if ($chat->files()->exists()) {
+                return response()->json(['error' => 'A file has already been uploaded to this chat. Please start a new chat to upload a new file.'], 409);
+            }
         }
 
         File::create([

@@ -65,4 +65,11 @@ class ChatController extends Controller
 
         return response()->json($chat);
     }
+
+    public function newChat()
+    {
+        $user = Auth::user();
+        $chat = Chat::create(['user_id' => $user->id]);
+        return response()->json($chat);
+    }
 }

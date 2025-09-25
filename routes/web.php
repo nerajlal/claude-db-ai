@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
     Route::post('/chat', [ChatController::class, 'chat'])->name('chat');
     Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');
+    Route::post('/chat/new', [ChatController::class, 'newChat'])->name('chat.new');
 });
 
 

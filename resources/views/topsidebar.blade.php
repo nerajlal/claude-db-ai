@@ -83,6 +83,18 @@
                     dropdown.classList.add('hidden');
                 }
             });
+
+            const upgradeButton = document.querySelector('.font-medium');
+            const modal = document.getElementById('upgradeModal');
+            const closeModal = document.getElementById('closeModal');
+
+            upgradeButton.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+
+            closeModal.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
         });
     </script>
 </head>
@@ -146,9 +158,35 @@
                     </button>
                 </div>
                 <div class="w-full">
-                    <button class="w-full text-xs bg-gradient-to-br from-green-400 to-blue-500 px-3 py-2 rounded text-white transition-colors duration-200 font-medium">
+                    <button id="upgradeProButton" class="w-full text-xs bg-gradient-to-br from-green-400 to-blue-500 px-3 py-2 rounded text-white transition-colors duration-200 font-medium">
                         Upgrade To Pro
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upgrade to Pro Modal -->
+        <div id="upgradeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Upgrade to Pro</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Upgrade and get these premium features:
+                        </p>
+                        <ul class="list-disc text-left mt-4">
+                            <li>Unlimited file uploads</li>
+                            <li>Priority support</li>
+                            <li>Access to new features first</li>
+                            <li>No ads</li>
+                            <li>Higher API rate limits</li>
+                        </ul>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="closeModal" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -223,5 +261,15 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Logout Button -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="flex items-center space-x-2 px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            <span>Logout</span>
+                        </button>
+                    </form>
                 </div>
             </div>

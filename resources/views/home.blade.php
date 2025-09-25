@@ -41,6 +41,11 @@
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
+                if (currentChatId && document.querySelector('#fileUpload + button span').textContent !== 'Upload .sql') {
+                    alert('A file has already been uploaded to this chat. Please start a new chat to upload a new file.');
+                    return;
+                }
+
                 const fileName = file.name;
                 const fileExtension = fileName.split('.').pop().toLowerCase();
 
@@ -192,7 +197,7 @@
                             messageElement.innerHTML = `
                                 <div class="flex items-start space-x-3">
                                     <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold text-white">
-                                        NL
+                                        {{ $initials }}
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-lg">${message.content}</p>
@@ -220,9 +225,24 @@
         }
 
         function newChat() {
-            currentChatId = null;
-            document.getElementById('chat-messages').querySelector('.space-y-6').innerHTML = '';
-            document.querySelector('#fileUpload + button span').textContent = 'Upload .sql';
+            fetch('{{ route('chat.new') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                currentChatId = data.id;
+                document.getElementById('chat-messages').querySelector('.space-y-6').innerHTML = '';
+                document.querySelector('#fileUpload + button span').textContent = 'Upload .sql';
+                const newChatItem = document.createElement('div');
+                newChatItem.className = 'p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer';
+                newChatItem.textContent = `Chat #${currentChatId}`;
+                newChatItem.onclick = () => loadChatHistory(currentChatId);
+                document.querySelector('.space-y-1').prepend(newChatItem);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
