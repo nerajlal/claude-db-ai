@@ -56,7 +56,7 @@ class ChatController extends Controller
 
     public function getChatHistory($chatId)
     {
-        $chat = Chat::with('messages')->findOrFail($chatId);
+        $chat = Chat::with('messages', 'files')->findOrFail($chatId);
         $user = Auth::user();
 
         if ($chat->user_id !== $user->id) {

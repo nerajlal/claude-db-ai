@@ -169,10 +169,17 @@
             currentChatId = chatId;
             const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
             chatMessages.innerHTML = '';
+            const uploadButtonSpan = document.querySelector('#fileUpload + button span');
 
             fetch(`/chat/history/${chatId}`)
                 .then(response => response.json())
                 .then(data => {
+                    if (data.files && data.files.length > 0) {
+                        uploadButtonSpan.textContent = `📄 ${data.files[0].filename}`;
+                    } else {
+                        uploadButtonSpan.textContent = 'Upload .sql';
+                    }
+
                     data.messages.forEach(message => {
                         const messageElement = document.createElement('div');
                         if (message.sender === 'user') {
