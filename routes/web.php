@@ -14,8 +14,6 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [DbController::class, 'index'])->name('home');
-    Route::post('/upload-db', [DbController::class, 'uploadDb'])->name('upload.db');
-    Route::post('/process-query', [DbController::class, 'processQuery'])->name('query.process');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
     Route::post('/chat', [ChatController::class, 'chat'])->name('chat');
     Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');

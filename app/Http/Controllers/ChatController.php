@@ -26,7 +26,6 @@ class ChatController extends Controller
             $chatId = $chat->id;
         } else {
             $chat = Chat::findOrFail($chatId);
-            // Ensure the user owns the chat
             if ($chat->user_id !== $user->id) {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
@@ -41,17 +40,17 @@ class ChatController extends Controller
         try {
             $result = Gemini::geminiPro()->generateContent($messageContent);
             $reply = $result->text();
-
-            Message::create([
-                'chat_id' => $chatId,
-                'sender' => 'assistant',
-                'content' => $reply,
-            ]);
-
-            return response()->json(['reply' => $reply, 'chat_id' => $chatId]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while processing your request.'], 500);
+            $reply = 'I was unable to get a response. Please check your Gemini API key and server configuration.';
         }
+
+        Message::create([
+            'chat_id' => $chatId,
+            'sender' => 'assistant',
+            'content' => $reply,
+        ]);
+
+        return response()->json(['reply' => $reply, 'chat_id' => $chatId]);
     }
 
     public function getChatHistory($chatId)

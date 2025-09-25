@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\File;
-use App\Models\Message;
-use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -21,11 +19,11 @@ class FileUploadController extends Controller
                 'chat_id' => 'nullable|exists:chats,id',
             ]);
 
-            $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $path = $file->store('uploads');
-            $user = Auth::user();
-            $chatId = $request->input('chat_id');
+        $file = $request->file('file');
+        $filename = $file->getClientOriginalName();
+        $path = $file->store('uploads');
+        $user = Auth::user();
+        $chatId = $request->input('chat_id');
 
             if (!$chatId) {
                 $chat = Chat::create([
@@ -51,9 +49,10 @@ class FileUploadController extends Controller
                 'chat_id' => $chatId,
             ]);
 
-            $fileContent = $file->get();
-            $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
-            
+        $fileContent = $file->get();
+        $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
+
+        try {
             $result = Gemini::geminiPro()->generateContent($prompt);
             $reply = $result->text();
 
@@ -65,7 +64,8 @@ class FileUploadController extends Controller
 
             return response()->json(['message' => 'File uploaded and analyzed successfully', 'chat_id' => $chatId, 'reply' => $reply]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Gemini API call failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while processing your request.'], 500);
         }
     }
 }
