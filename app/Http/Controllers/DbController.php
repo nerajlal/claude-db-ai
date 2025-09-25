@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class DbController extends Controller
 {
@@ -16,19 +18,42 @@ class DbController extends Controller
     public function uploadDb(Request $request)
     {
         $request->validate([
-            'db_file' => 'required|file|mimes:sqlite,db,sql'
+            'db_file' => 'required|file|mimes:sqlite,db,sql',
         ]);
 
-        // Save DB file
-        $path = $request->file('db_file')->storeAs('databases', 'uploaded.sqlite');
+        $user = Auth::user();
+        $file = $request->file('db_file');
 
-        return back()->with('success', 'Database uploaded successfully!');
+        // Create a unique path for the user's database file
+        $path = $file->storeAs(
+            'databases/' . $user->id,
+            uniqid() . '.' . $file->getClientOriginalExtension()
+        );
+
+        // Create a record in the database
+        UserDatabase::create([
+            'login_id' => $user->id,
+            'file_path' => $path,
+            'original_name' => $file->getClientOriginalName(),
+        ]);
+
+        return back()->with('success', 'Database uploaded and linked to your account successfully!');
     }
 
     public function processQuery(Request $request)
     {
         $userQuery = $request->input('user_query');
         $sql = $request->input('sql');
+
+        // Find the latest database for the current user
+        $userDatabase = UserDatabase::where('login_id', Auth::id())->latest()->first();
+
+        if (!$userDatabase) {
+            return back()->withErrors(['db' => 'You have not uploaded a database yet.']);
+        }
+
+        // Dynamically set the database connection config
+        Config::set('database.connections.sqlite_uploaded.database', storage_path('app/' . $userDatabase->file_path));
 
         if (!$sql) {
             // Call Gemini API to convert user query → SQL
@@ -37,6 +62,7 @@ class DbController extends Controller
 
         $results = [];
         try {
+            // Use the dynamically configured connection
             $results = DB::connection('sqlite_uploaded')->select($sql);
         } catch (\Exception $e) {
             return back()->withErrors(['sql' => $e->getMessage()]);
@@ -48,7 +74,7 @@ class DbController extends Controller
     private function getSqlFromGemini($query)
     {
         // TODO: Replace with actual Gemini API call
-        // Example placeholder
+        // This is a placeholder
         return "SELECT name FROM sqlite_master WHERE type='table' LIMIT 5;";
     }
 }
