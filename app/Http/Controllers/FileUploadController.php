@@ -8,6 +8,7 @@ use App\Models\Message;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
@@ -64,6 +65,7 @@ class FileUploadController extends Controller
 
             return response()->json(['message' => 'File uploaded and analyzed successfully', 'chat_id' => $chatId, 'reply' => $reply]);
         } catch (\Exception $e) {
+            Log::error('Gemini API call failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while processing your request.'], 500);
         }
     }

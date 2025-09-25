@@ -78,7 +78,12 @@
                     },
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     loadingMessage.remove();
                     if (data.chat_id && !currentChatId) {
@@ -123,8 +128,9 @@
                     }
                 })
                 .catch(error => {
+                    loadingMessage.remove();
                     console.error('Error:', error);
-                    alert('File upload failed.');
+                    alert('File upload failed. Please check the console for more details.');
                 });
             }
         }
