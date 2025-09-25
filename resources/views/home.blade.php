@@ -10,6 +10,18 @@
             <input type="file" name="db_file" required>
             <button class="btn btn-primary">Upload DB</button>
         </form>
+
+        <!-- Success and Error Messages -->
+        @if (session('success'))
+            <div class="alert alert-success mt-2">
+                {{ session('success') }}
+            </div>
+        @endif
+        @error('db_file')
+            <div class="alert alert-danger mt-2">
+                {{ $message }}
+            </div>
+        @enderror
     </div>
 
     <div class="pt-5 mt-5">

@@ -17,27 +17,31 @@ class DbController extends Controller
 
     public function uploadDb(Request $request)
     {
-        $request->validate([
-            'db_file' => 'required|file|mimes:sqlite,db,sql',
-        ]);
+        try {
+            $request->validate([
+                'db_file' => 'required|file|mimes:sqlite,db,sql',
+            ]);
 
-        $user = Auth::user();
-        $file = $request->file('db_file');
+            $user = Auth::user();
+            $file = $request->file('db_file');
 
-        // Create a unique path for the user's database file
-        $path = $file->storeAs(
-            'databases/' . $user->id,
-            uniqid() . '.' . $file->getClientOriginalExtension()
-        );
+            // Create a unique path for the user's database file
+            $path = $file->storeAs(
+                'databases/' . $user->id,
+                uniqid() . '.' . $file->getClientOriginalExtension()
+            );
 
-        // Create a record in the database
-        UserDatabase::create([
-            'login_id' => $user->id,
-            'file_path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-        ]);
+            // Create a record in the database
+            UserDatabase::create([
+                'login_id' => $user->id,
+                'file_path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+            ]);
 
-        return back()->with('success', 'Database uploaded and linked to your account successfully!');
+            return back()->with('success', 'Database uploaded and linked to your account successfully!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['db_file' => 'An error occurred during upload: ' . $e->getMessage()]);
+        }
     }
 
     public function processQuery(Request $request)
