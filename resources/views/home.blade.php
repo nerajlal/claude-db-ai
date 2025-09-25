@@ -130,7 +130,11 @@
                 .catch(error => {
                     loadingMessage.remove();
                     console.error('Error:', error);
-                    alert('File upload failed. Please check the console for more details.');
+                    const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded relative';
+                    errorMessage.innerHTML = `<strong class="font-bold">Error:</strong><span class="block sm:inline"> File upload failed. Please check the console for more details.</span>`;
+                    chatMessages.appendChild(errorMessage);
                 });
             }
         }

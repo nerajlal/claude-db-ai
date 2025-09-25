@@ -15,57 +15,58 @@ class FileUploadController extends Controller
 {
     public function upload(Request $request)
     {
-        try {
-            $request->validate([
-                'file' => 'required|file',
-                'chat_id' => 'nullable|exists:chats,id',
-            ]);
+        $request->validate([
+            'file' => 'required|file',
+            'chat_id' => 'nullable|exists:chats,id',
+        ]);
 
-            $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $path = $file->store('uploads');
-            $user = Auth::user();
-            $chatId = $request->input('chat_id');
+        $file = $request->file('file');
+        $filename = $file->getClientOriginalName();
+        $path = $file->store('uploads');
+        $user = Auth::user();
+        $chatId = $request->input('chat_id');
 
-            if (!$chatId) {
-                $chat = Chat::create([
-                    'user_id' => $user->id,
-                    'name' => $filename,
-                ]);
-                $chatId = $chat->id;
-            } else {
-                $chat = Chat::findOrFail($chatId);
-                if ($chat->files()->exists()) {
-                    return response()->json(['error' => 'A file has already been uploaded to this chat. Please start a new chat to upload a new file.'], 409);
-                }
-                if ($chat->name === 'New Chat') {
-                    $chat->name = $filename;
-                    $chat->save();
-                }
-            }
-
-            File::create([
-                'filename' => $filename,
-                'path' => $path,
+        if (!$chatId) {
+            $chat = Chat::create([
                 'user_id' => $user->id,
-                'chat_id' => $chatId,
+                'name' => $filename,
             ]);
+            $chatId = $chat->id;
+        } else {
+            $chat = Chat::findOrFail($chatId);
+            if ($chat->files()->exists()) {
+                return response()->json(['error' => 'A file has already been uploaded to this chat. Please start a new chat to upload a new file.'], 409);
+            }
+            if ($chat->name === 'New Chat') {
+                $chat->name = $filename;
+                $chat->save();
+            }
+        }
 
-            $fileContent = $file->get();
-            $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
+        File::create([
+            'filename' => $filename,
+            'path' => $path,
+            'user_id' => $user->id,
+            'chat_id' => $chatId,
+        ]);
 
+        $fileContent = $file->get();
+        $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
+
+        try {
             $result = Gemini::geminiPro()->generateContent($prompt);
             $reply = $result->text();
-
-            Message::create([
-                'chat_id' => $chatId,
-                'sender' => 'assistant',
-                'content' => $reply,
-            ]);
-
-            return response()->json(['message' => 'File uploaded and analyzed successfully', 'chat_id' => $chatId, 'reply' => $reply]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Gemini API call failed: ' . $e->getMessage());
+            $reply = 'I was unable to analyze the file. Please ensure your Gemini API key is configured correctly and that the server has outbound internet access.';
         }
+
+        Message::create([
+            'chat_id' => $chatId,
+            'sender' => 'assistant',
+            'content' => $reply,
+        ]);
+
+        return response()->json(['message' => 'File uploaded successfully', 'chat_id' => $chatId, 'reply' => $reply]);
     }
 }
