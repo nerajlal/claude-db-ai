@@ -62,9 +62,6 @@
                         </svg>
                     </div>
                     <span class="text-lg font-semibold">ChatGPT</span>
-                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7 10L12 15L17 10H7Z"/>
-                    </svg>
                 </div>
             </div>
 
@@ -142,11 +139,7 @@
                         </svg>
                         <span>Share</span>
                     </button>
-                    <button class="p-2 rounded hover:bg-gray-700">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                        </svg>
-                    </button>
+                    
                 </div>
             </div>
 
@@ -164,24 +157,29 @@
                         </div>
                         
                         <div class="space-y-4">
-                            <p>Thanks for sharing the screenshot 👍 — now it's clear.</p>
+                            <p>Thanks for sharing the database 👍 — now it's clear.</p>
                             
-                            <p><strong>That coin icon before the cart</strong> is coming from this setting in your JSON:</p>
+                            <p><strong>That query icon before the cart</strong> is coming from this setting in your JSON:</p>
                             
                             <!-- JSON Code Block 1 -->
                             <div class="bg-black rounded-lg p-4 relative">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs text-gray-400">json</span>
+                                    <span class="text-xs text-gray-400">sql</span>
                                     <button class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                         </svg>
-                                        <span>Copy code</span>
+                                        <span>Copy query</span>
                                     </button>
                                 </div>
                                 <code class="text-sm">
-                                    <span class="text-red-400">"show_points_icon"</span><span class="text-white">:</span> <span class="text-blue-400">true</span>
+                                    <span class="text-red-400">SELECT * FROM users;</span>
                                 </code>
+                                <div class="absolute right-4 top-12">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M7 10L12 15L17 10H7Z"/>
+                                    </svg>
+                                </div>
                             </div>
 
                             <div class="space-y-2">
@@ -202,16 +200,16 @@
                             <!-- JSON Code Block 2 -->
                             <div class="bg-black rounded-lg p-4 relative">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs text-gray-400">json</span>
+                                    <span class="text-xs text-gray-400">sql</span>
                                     <button class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                         </svg>
-                                        <span>Copy code</span>
+                                        <span>Copy query</span>
                                     </button>
                                 </div>
                                 <code class="text-sm">
-                                    <span class="text-red-400">"show_points_icon"</span><span class="text-white">:</span> <span class="text-blue-400">false</span>
+                                    <span class="text-red-400">INSERT INTO users (name, phone, email, password) VALUES ('John Doe', '9876543210', 'john@example.com', 'secret123');</span>
                                 </code>
                                 <div class="absolute right-4 top-12">
                                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -225,14 +223,9 @@
             </div>
 
             <!-- Input Area -->
-            <div class="p-4 border-t border-gray-700">
+            <div class="p-1 border-t border-gray-700">
                 <div class="max-w-4xl mx-auto">
-                    <div class="bg-chat-input rounded-lg flex items-center p-4">
-                        <button class="mr-3 p-1 rounded hover:bg-gray-600">
-                            <!-- <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2L13.09 7.91L19 9L13.09 10.09L12 16L10.91 10.09L5 9L10.91 7.91L12 2Z"/>
-                            </svg> -->
-                        </button>
+                    <div class="bg-chat-input rounded-lg flex items-center p-3">
                         <input 
                             type="text" 
                             placeholder="Ask anything"
@@ -248,9 +241,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-1v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-1c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-1"></path>
                             </svg>
                         </button> -->
-                    </div>
-                    <div class="text-center text-xs text-gray-400 mt-2">
-                        ChatGPT can make mistakes. Check important info. See <a href="#" class="underline">Cookie Preferences</a>
                     </div>
                 </div>
             </div>
