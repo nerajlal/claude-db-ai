@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\Message;
+use Gemini\Data\Content;
+use Gemini\Enums\Role;
 use Illuminate\Http\Request;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Auth;
@@ -31,15 +33,24 @@ class ChatController extends Controller
             }
         }
 
+        $historyMessages = $chat->messages()->orderBy('created_at')->get();
+
         Message::create([
             'chat_id' => $chatId,
             'sender' => 'user',
             'content' => $messageContent,
         ]);
 
+        $history = [];
+        foreach ($historyMessages as $message) {
+            $role = $message->sender === 'user' ? Role::USER : Role::MODEL;
+            $history[] = Content::parse(part: $message->content, role: $role);
+        }
+
         try {
-            $result = Gemini::geminiPro()->generateContent($messageContent);
-            $reply = $result->text();
+            $chatInstance = Gemini::geminiPro()->startChat(history: $history);
+            $response = $chatInstance->sendMessage($messageContent);
+            $reply = $response->text();
         } catch (\Exception $e) {
             $reply = 'I was unable to get a response. Please check your Gemini API key and server configuration.';
         }
