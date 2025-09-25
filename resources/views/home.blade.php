@@ -1,6 +1,6 @@
-@include('topsidebar')
+@extends('layouts.app')
 
-
+@section('content')
             <!-- Chat Messages -->
             <div id="chat-messages" class="flex-1 overflow-y-auto p-6 scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <style>
@@ -14,7 +14,7 @@
             </div>
 
             <!-- Input Area -->
-            <div id="inputArea" class="hidden p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-chat-sidebar">
+            <div id="inputArea" class="p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-chat-sidebar">
                 <div class="max-w-4xl mx-auto">
                     <div class="bg-gray-100 dark:bg-chat-input rounded-lg flex items-center p-3">
                         <input
@@ -48,13 +48,10 @@
                 }
 
                 const fileName = file.name;
-                const fileExtension = fileName.split('.').pop().toLowerCase();
 
-                // Update button text to show selected file
                 const button = document.querySelector('#fileUpload + button span');
                 button.textContent = `📄 ${fileName}`;
 
-                // Add visual feedback
                 const uploadButton = document.querySelector('#fileUpload + button');
                 uploadButton.classList.remove('border-gray-300', 'dark:border-gray-600');
                 uploadButton.classList.add('bg-green-700', 'border-green-600');
@@ -65,12 +62,6 @@
                     formData.append('chat_id', currentChatId);
                 }
 
-                const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
-                const loadingMessage = document.createElement('div');
-                loadingMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
-                loadingMessage.innerHTML = `<p class="text-lg">Database is uploading...</p>`;
-                chatMessages.appendChild(loadingMessage);
-
                 fetch('{{ route('upload') }}', {
                     method: 'POST',
                     headers: {
@@ -78,14 +69,8 @@
                     },
                     body: formData
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    loadingMessage.remove();
                     if (data.chat_id && !currentChatId) {
                         currentChatId = data.chat_id;
                         chatHasFile = true;
@@ -108,33 +93,10 @@
                         `;
                         document.querySelector('.space-y-1').prepend(newChatItem);
                     }
-                    if (data.reply) {
-                        const assistantMessage = document.createElement('div');
-                        assistantMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
-                        assistantMessage.innerHTML = `
-                            <div class="flex items-start space-x-3 mb-4">
-                                <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="space-y-6">
-                                <p class="text-lg">${data.reply}</p>
-                            </div>
-                        `;
-                        chatMessages.appendChild(assistantMessage);
-                        document.getElementById('inputArea').classList.remove('hidden');
-                    }
                 })
                 .catch(error => {
-                    loadingMessage.remove();
                     console.error('Error:', error);
-                    const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded relative';
-                    errorMessage.innerHTML = `<strong class="font-bold">Error:</strong><span class="block sm:inline"> File upload failed. Please check the console for more details.</span>`;
-                    chatMessages.appendChild(errorMessage);
+                    alert('File upload failed. Please check the console for more details.');
                 });
             }
         }
@@ -146,7 +108,6 @@
             if (message) {
                 const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
 
-                // Add user message to chat
                 const userMessage = document.createElement('div');
                 userMessage.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-6';
                 userMessage.innerHTML = `
@@ -176,9 +137,22 @@
                     if (data.chat_id && !currentChatId) {
                         currentChatId = data.chat_id;
                         const newChatItem = document.createElement('div');
-                        newChatItem.className = 'p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer';
-                        newChatItem.textContent = `Chat #${currentChatId}`;
-                        newChatItem.onclick = () => loadChatHistory(currentChatId);
+                        newChatItem.className = 'flex items-center justify-between p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer relative';
+                        newChatItem.setAttribute('x-data', '{ open: false }');
+                        newChatItem.innerHTML = `
+                            <span class="flex-grow" onclick="loadChatHistory(${data.id})">${data.name}</span>
+                            <button class="ml-2" @click="open = !open">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                                <div class="py-1">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="renameChat(${data.id}, event)">Rename</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="deleteChat(${data.id}, event)">Delete</a>
+                                </div>
+                            </div>
+                        `;
                         document.querySelector('.space-y-1').prepend(newChatItem);
                     }
 
@@ -223,11 +197,9 @@
                     if (data.files && data.files.length > 0) {
                         uploadButtonSpan.textContent = `📄 ${data.files[0].filename}`;
                         chatHasFile = true;
-                        document.getElementById('inputArea').classList.remove('hidden');
                     } else {
                         uploadButtonSpan.textContent = 'Upload .sql';
                         chatHasFile = false;
-                        document.getElementById('inputArea').classList.add('hidden');
                     }
 
                     data.messages.forEach(message => {
@@ -371,5 +343,4 @@
             document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
         });
     </script>
-</body>
-</html>
+@endsection

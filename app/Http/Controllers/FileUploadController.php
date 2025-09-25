@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\File;
-use App\Models\Message;
-use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -15,12 +13,17 @@ class FileUploadController extends Controller
 {
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file',
-            'chat_id' => 'nullable|exists:chats,id',
-        ]);
+        try {
+            $request->validate([
+                'file' => 'required|file',
+                'chat_id' => 'nullable|exists:chats,id',
+            ]);
 
-        $file = $request->file('file');
+            $file = $request->file('file');
+        } catch (\Exception $e) {
+            Log::error('File upload validation failed: ' . $e->getMessage());
+            return response()->json(['error' => 'File upload validation failed.'], 422);
+        }
         $filename = $file->getClientOriginalName();
         $path = $file->store('uploads');
         $user = Auth::user();
@@ -50,23 +53,6 @@ class FileUploadController extends Controller
             'chat_id' => $chatId,
         ]);
 
-        $fileContent = $file->get();
-        $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
-
-        try {
-            $result = Gemini::geminiPro()->generateContent($prompt);
-            $reply = $result->text();
-        } catch (\Exception $e) {
-            Log::error('Gemini API call failed: ' . $e->getMessage());
-            $reply = 'I was unable to analyze the file. Please ensure your Gemini API key is configured correctly and that the server has outbound internet access.';
-        }
-
-        Message::create([
-            'chat_id' => $chatId,
-            'sender' => 'assistant',
-            'content' => $reply,
-        ]);
-
-        return response()->json(['message' => 'File uploaded successfully', 'chat_id' => $chatId, 'reply' => $reply]);
+        return response()->json(['message' => 'File uploaded successfully', 'chat_id' => $chatId]);
     }
 }
