@@ -250,24 +250,69 @@
 
         function renameChat(chatId, event) {
             event.stopPropagation();
-            const newName = prompt('Enter a new name for the chat:');
-            if (newName) {
-                fetch('{{ route('chat.rename') }}', {
-                    method: 'POST',
+            const renameModal = document.getElementById('renameModal');
+            const newNameInput = document.getElementById('newName');
+            const saveRenameButton = document.getElementById('saveRename');
+            const closeRenameModalButton = document.getElementById('closeRenameModal');
+
+            renameModal.classList.remove('hidden');
+
+            saveRenameButton.onclick = () => {
+                const newName = newNameInput.value;
+                if (newName) {
+                    fetch('{{ route('chat.rename') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ chat_id: chatId, name: newName })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            renameModal.classList.add('hidden');
+                            const chatElement = document.querySelector(`[onclick="loadChatHistory(${chatId})"]`);
+                            chatElement.textContent = newName;
+                        }
+                    });
+                }
+            };
+
+            closeRenameModalButton.onclick = () => {
+                renameModal.classList.add('hidden');
+            };
+        }
+
+        function deleteChat(chatId, event) {
+            event.stopPropagation();
+            const deleteModal = document.getElementById('deleteModal');
+            const confirmDeleteButton = document.getElementById('confirmDelete');
+            const closeDeleteModalButton = document.getElementById('closeDeleteModal');
+
+            deleteModal.classList.remove('hidden');
+
+            confirmDeleteButton.onclick = () => {
+                fetch(`/chat/delete/${chatId}`, {
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ chat_id: chatId, name: newName })
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
-                        alert(data.message);
-                        location.reload();
+                        deleteModal.classList.add('hidden');
+                        const chatElement = document.querySelector(`[onclick="loadChatHistory(${chatId})"]`).parentNode;
+                        chatElement.remove();
                     }
                 });
-            }
+            };
+
+            closeDeleteModalButton.onclick = () => {
+                deleteModal.classList.add('hidden');
+            };
         }
 
         document.addEventListener('DOMContentLoaded', function() {

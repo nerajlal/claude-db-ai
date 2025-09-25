@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');
     Route::post('/chat/new', [ChatController::class, 'newChat'])->name('chat.new');
     Route::post('/chat/rename', [ChatController::class, 'renameChat'])->name('chat.rename');
+    Route::delete('/chat/delete/{chatId}', [ChatController::class, 'deleteChat'])->name('chat.delete');
 });
 
 

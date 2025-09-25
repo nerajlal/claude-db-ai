@@ -92,4 +92,18 @@ class ChatController extends Controller
 
         return response()->json(['message' => 'Chat renamed successfully']);
     }
+
+    public function deleteChat($chatId)
+    {
+        $chat = Chat::findOrFail($chatId);
+        $user = Auth::user();
+
+        if ($chat->user_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $chat->delete();
+
+        return response()->json(['message' => 'Chat deleted successfully']);
+    }
 }
