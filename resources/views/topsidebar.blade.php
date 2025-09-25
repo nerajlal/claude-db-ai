@@ -22,6 +22,58 @@
 
 
 
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (html.classList.contains('dark')) {
+                // Switch to light mode
+                html.classList.remove('dark');
+                themeIcon.innerHTML = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                // Switch to dark mode
+                html.classList.add('dark');
+                themeIcon.innerHTML = '☀️';
+                themeText.textContent = 'Light';
+            }
+        }
+
+        function toggleShareDropdown() {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function shareOption(type) {
+            const dropdown = document.getElementById('shareDropdown');
+            dropdown.classList.add('hidden');
+
+            switch(type) {
+                case 'link':
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                    break;
+                case 'twitter':
+                    window.open('https://twitter.com/intent/tweet?text=Check out these SQL queries!&url=' + encodeURIComponent(window.location.href), '_blank');
+                    break;
+                case 'linkedin':
+                    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
+                    break;
+                case 'email':
+                    window.location.href = 'mailto:?subject=SQL Queries&body=Check out these helpful SQL queries: ' + window.location.href;
+                    break;
+                case 'export':
+                    alert('Exporting queries... (Feature coming soon)');
+                    break;
+            }
+        }
+
         // Close dropdown when clicking outside
         document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('click', function(event) {
@@ -53,7 +105,7 @@
 
             <!-- Navigation Items -->
             <div class="flex-1 p-2">
-                <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-left transition-colors duration-200">
+                <button onclick="newChat()" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-left transition-colors duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -84,10 +136,10 @@
             <div class="p-4 border-t border-gray-300 dark:border-gray-700">
                 <div class="flex items-center space-x-3 mb-3">
                     <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold text-white">
-                        NL
+                        {{ $initials }}
                     </div>
                     <div class="flex-1">
-                        <div class="text-sm font-medium">NERAJ LAL</div>
+                        <div class="text-sm font-medium">{{ Auth::user()->name }}</div>
                     </div>
                     <button class="text-xs bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 px-3 py-1 rounded text-white transition-colors duration-200">
                         Free Plan

@@ -111,7 +111,7 @@
                 userMessage.innerHTML = `
                     <div class="flex items-start space-x-3">
                         <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold text-white">
-                            NL
+                            {{ $initials }}
                         </div>
                         <div class="flex-1">
                             <p class="text-lg">${message}</p>
@@ -132,8 +132,13 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.chat_id) {
+                    if (data.chat_id && !currentChatId) {
                         currentChatId = data.chat_id;
+                        const newChatItem = document.createElement('div');
+                        newChatItem.className = 'p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer';
+                        newChatItem.textContent = `Chat #${currentChatId}`;
+                        newChatItem.onclick = () => loadChatHistory(currentChatId);
+                        document.querySelector('.space-y-1').prepend(newChatItem);
                     }
 
                     const assistantMessage = document.createElement('div');
@@ -212,6 +217,12 @@
                         chatMessages.appendChild(messageElement);
                     });
                 });
+        }
+
+        function newChat() {
+            currentChatId = null;
+            document.getElementById('chat-messages').querySelector('.space-y-6').innerHTML = '';
+            document.querySelector('#fileUpload + button span').textContent = 'Upload .sql';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
