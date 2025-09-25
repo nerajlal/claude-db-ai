@@ -45,17 +45,19 @@
                 const fileExtension = fileName.split('.').pop().toLowerCase();
 
                 // Update button text to show selected file
-                const button = event.target.parentNode.querySelector('button span');
+                const button = document.querySelector('#fileUpload + button span');
                 button.textContent = `📄 ${fileName}`;
 
                 // Add visual feedback
-                const uploadButton = event.target.parentNode.querySelector('button');
+                const uploadButton = document.querySelector('#fileUpload + button');
                 uploadButton.classList.remove('border-gray-300', 'dark:border-gray-600');
                 uploadButton.classList.add('bg-green-700', 'border-green-600');
 
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('chat_id', currentChatId);
+                if (currentChatId) {
+                    formData.append('chat_id', currentChatId);
+                }
 
                 fetch('{{ route('upload') }}', {
                     method: 'POST',
@@ -68,6 +70,24 @@
                 .then(data => {
                     if (data.chat_id) {
                         currentChatId = data.chat_id;
+                    }
+                    if (data.reply) {
+                        const chatMessages = document.getElementById('chat-messages').querySelector('.space-y-6');
+                        const assistantMessage = document.createElement('div');
+                        assistantMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
+                        assistantMessage.innerHTML = `
+                            <div class="flex items-start space-x-3 mb-4">
+                                <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <p class="text-lg">${data.reply}</p>
+                            </div>
+                        `;
+                        chatMessages.appendChild(assistantMessage);
                     }
                     alert(data.message);
                 })
@@ -186,6 +206,10 @@
                     });
                 });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
+        });
     </script>
 </body>
 </html>

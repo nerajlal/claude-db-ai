@@ -20,86 +20,6 @@
         }
 
 
-        function toggleQueryOutput(queryId) {
-            const outputDiv = document.getElementById(queryId);
-            const arrow = document.querySelector(`[onclick="toggleQueryOutput('${queryId}')"] svg`);
-            
-            if (outputDiv.style.display === 'none' || outputDiv.style.display === '') {
-                outputDiv.style.display = 'block';
-                arrow.style.transform = 'rotate(180deg)';
-            } else {
-                outputDiv.style.display = 'none';
-                arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            if (html.classList.contains('dark')) {
-                // Switch to light mode
-                html.classList.remove('dark');
-                themeIcon.innerHTML = '🌙';
-                themeText.textContent = 'Dark';
-            } else {
-                // Switch to dark mode
-                html.classList.add('dark');
-                themeIcon.innerHTML = '☀️';
-                themeText.textContent = 'Light';
-            }
-        }
-
-        function toggleShareDropdown() {
-            const dropdown = document.getElementById('shareDropdown');
-            if (dropdown.classList.contains('hidden')) {
-                dropdown.classList.remove('hidden');
-            } else {
-                dropdown.classList.add('hidden');
-            }
-        }
-
-        function shareOption(type) {
-            const dropdown = document.getElementById('shareDropdown');
-            dropdown.classList.add('hidden');
-            
-            switch(type) {
-                case 'link':
-                    navigator.clipboard.writeText(window.location.href);
-                    alert('Link copied to clipboard!');
-                    break;
-                case 'twitter':
-                    window.open('https://twitter.com/intent/tweet?text=Check out these SQL queries!&url=' + encodeURIComponent(window.location.href), '_blank');
-                    break;
-                case 'linkedin':
-                    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
-                    break;
-                case 'email':
-                    window.location.href = 'mailto:?subject=SQL Queries&body=Check out these helpful SQL queries: ' + window.location.href;
-                    break;
-                case 'export':
-                    alert('Exporting queries... (Feature coming soon)');
-                    break;
-            }
-        }
-
-        function copyCode(element) {
-            const codeBlock = element.closest('.code-block').querySelector('code');
-            const text = codeBlock.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = element.querySelector('span').textContent;
-                element.querySelector('span').textContent = 'Copied!';
-                element.classList.add('text-green-400');
-                
-                setTimeout(() => {
-                    element.querySelector('span').textContent = originalText;
-                    element.classList.remove('text-green-400');
-                }, 2000);
-            });
-        }
 
 
         // Close dropdown when clicking outside
@@ -197,7 +117,7 @@
                     
                     <!-- Upload SQL File Button -->
                     <div class="relative">
-                        <input type="file" id="fileUpload" accept=".sql,.db,.sqlite,.txt,.csv,.json" class="hidden" onchange="handleFileUpload(event)">
+                        <input type="file" id="fileUpload" accept=".sql,.db,.sqlite,.txt,.csv,.json" class="hidden">
                         <button onclick="document.getElementById('fileUpload').click()" class="flex items-center space-x-2 px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition-colors duration-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>

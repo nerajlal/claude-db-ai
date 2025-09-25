@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\File;
+use App\Models\Message;
+use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -35,6 +37,22 @@ class FileUploadController extends Controller
             'chat_id' => $chatId,
         ]);
 
-        return response()->json(['message' => 'File uploaded successfully', 'chat_id' => $chatId]);
+        $fileContent = $file->get();
+        $prompt = "Analyze the following file and provide a summary: \n\n" . $fileContent;
+
+        try {
+            $result = Gemini::geminiPro()->generateContent($prompt);
+            $reply = $result->text();
+
+            Message::create([
+                'chat_id' => $chatId,
+                'sender' => 'assistant',
+                'content' => $reply,
+            ]);
+
+            return response()->json(['message' => 'File uploaded and analyzed successfully', 'chat_id' => $chatId, 'reply' => $reply]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while processing your request.'], 500);
+        }
     }
 }
