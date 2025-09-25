@@ -210,16 +210,20 @@
 
             <!-- User Profile -->
             <div class="p-4 border-t border-gray-300 dark:border-gray-700">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 mb-3">
                     <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-semibold text-white">
                         NL
                     </div>
                     <div class="flex-1">
                         <div class="text-sm font-medium">NERAJ LAL</div>
-                        <div class="text-xs text-gray-600 dark:text-gray-400">SQL Developer</div>
                     </div>
-                    <button class="text-xs bg-blue-600 hover:bg-blue-700 dark:bg-gray-700 dark:hover:bg-gray-600 px-3 py-1 rounded text-white transition-colors duration-200">
-                        Pro
+                    <button class="text-xs bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 px-3 py-1 rounded text-white transition-colors duration-200">
+                        Free Plan
+                    </button>
+                </div>
+                <div class="w-full">
+                    <button class="w-full text-xs bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-white transition-colors duration-200 font-medium">
+                        Upgrade To Pro
                     </button>
                 </div>
             </div>
@@ -461,7 +465,7 @@
             </div>
 
             <!-- Input Area -->
-            <div class="p-4 border-t border-gray-300 dark:border-gray-700">
+            <div class="p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-chat-sidebar">
                 <div class="max-w-4xl mx-auto">
                     <div class="bg-gray-100 dark:bg-chat-input rounded-lg flex items-center p-3">
                         <input 
