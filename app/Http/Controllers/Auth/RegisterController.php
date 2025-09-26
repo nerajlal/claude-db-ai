@@ -49,7 +49,7 @@ class RegisterController extends Controller
         return \Illuminate\Support\Facades\Validator::make($data, [
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:255', 'unique:users'],
+            'phone' => ['required', 'string', 'max:255', 'unique:login,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
