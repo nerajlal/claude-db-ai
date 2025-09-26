@@ -24,7 +24,9 @@
 <body class="bg-white dark:bg-chat-gray text-gray-900 dark:text-white font-sans transition-colors duration-200">
     <!-- Main Container -->
     <div class="flex h-screen">
-        @include('topsidebar')
+        @auth
+            @include('topsidebar')
+        @endauth
         @yield('content')
     </div>
 </body>
