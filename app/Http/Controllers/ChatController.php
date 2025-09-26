@@ -63,7 +63,7 @@ class ChatController extends Controller
                 ->withHttpClient($guzzleClient)
                 ->make();
 
-            $chatInstance = $client->generativeModel(env('GEMINI_MODEL', 'gemini-1.5-flash'))->startChat(history: $history);
+            $chatInstance = $client->generativeModel(env('GEMINI_MODEL', 'gemini-2.0-flash'))->startChat(history: $history);
             $response = $chatInstance->sendMessage($messageContent);
             $reply = $response->text();
         } catch (\Exception $e) {
