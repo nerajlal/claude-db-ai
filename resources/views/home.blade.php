@@ -272,6 +272,10 @@
                 `;
                 chatMessages.appendChild(userMessage);
 
+                // Scroll to bottom
+                const chatContainer = document.getElementById('chat-messages');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
                 input.value = '';
 
                 fetch('{{ route('chat') }}', {
@@ -294,6 +298,10 @@
                     }
                     const assistantMessage = renderAssistantMessage(data.reply);
                     chatMessages.appendChild(assistantMessage);
+
+                    // Scroll to bottom
+                    const chatContainer = document.getElementById('chat-messages');
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 })
                 .catch(error => {
                     console.error('Error:', error);
