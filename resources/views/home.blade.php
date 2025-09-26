@@ -39,6 +39,103 @@
         let currentChatId = null;
         let chatHasFile = false;
 
+        function toggleSqlQuery(queryId) {
+            const codeDiv = document.getElementById(queryId);
+            const arrow = document.querySelector(`[onclick="toggleSqlQuery('${queryId}')"] svg`);
+
+            if (codeDiv.style.display === 'none' || codeDiv.style.display === '') {
+                codeDiv.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                codeDiv.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function copyCode(element) {
+            const codeBlock = element.closest('.code-block').querySelector('code');
+            const text = codeBlock.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = element.querySelector('span').textContent;
+                element.querySelector('span').textContent = 'Copied!';
+                element.classList.add('text-green-400');
+
+                setTimeout(() => {
+                    element.querySelector('span').textContent = originalText;
+                    element.classList.remove('text-green-400');
+                }, 2000);
+            });
+        }
+
+        function renderAssistantMessage(content) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
+
+            const sqlRegex = /```sql\n([\s\S]+?)```/g;
+            if (!sqlRegex.test(content)) {
+                messageElement.innerHTML = `
+                    <div class="flex items-start space-x-3 mb-4">
+                        <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                        </div>
+                    </div>
+                    <div class="space-y-6"><p class="text-lg" style="white-space: pre-wrap;">${content.replace(/</g, "&lt;")}</p></div>
+                `;
+                return messageElement;
+            }
+
+            sqlRegex.lastIndex = 0;
+            let htmlContent = '';
+            let lastIndex = 0;
+            let match;
+
+            while ((match = sqlRegex.exec(content)) !== null) {
+                // Add the text before the match
+                if (match.index > lastIndex) {
+                    htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex, match.index).replace(/</g, "&lt;")}</div>`;
+                }
+
+                const sqlCode = match[1];
+                const sanitizedSqlCode = sqlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                const uniqueId = 'sql-query-' + Date.now() + Math.random().toString(36).substr(2, 9);
+
+                htmlContent += `
+                    <div class="my-2 text-base">
+                        <button onclick="toggleSqlQuery('${uniqueId}')" class="flex items-center justify-between w-full p-2 text-sm font-medium text-left text-gray-600 dark:text-gray-300 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
+                            <span class="font-semibold">Show/Hide SQL Query</span>
+                            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" style="transform: rotate(0deg);" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10L12 15L17 10H7Z"/></svg>
+                        </button>
+                        <div id="${uniqueId}" style="display: none;" class="code-block mt-2 p-4 bg-black text-white rounded-lg overflow-x-auto relative">
+                            <button onclick="copyCode(this)" class="absolute top-2 right-2 flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <span>Copy code</span>
+                            </button>
+                            <pre><code class="text-sm">${sanitizedSqlCode}</code></pre>
+                        </div>
+                    </div>
+                `;
+                lastIndex = sqlRegex.lastIndex;
+            }
+
+            // Add any remaining text after the last match
+            if (lastIndex < content.length) {
+                htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex).replace(/</g, "&lt;")}</div>`;
+            }
+
+            messageElement.innerHTML = `
+                <div class="flex items-start space-x-3 mb-4">
+                    <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                    </div>
+                </div>
+                <div class="space-y-6 text-lg">${htmlContent}</div>
+            `;
+
+            return messageElement;
+        }
+
+
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -156,20 +253,7 @@
                         document.querySelector('.space-y-1').prepend(newChatItem);
                     }
 
-                    const assistantMessage = document.createElement('div');
-                    assistantMessage.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
-                    assistantMessage.innerHTML = `
-                        <div class="flex items-start space-x-3 mb-4">
-                            <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="space-y-6">
-                            <p class="text-lg">${data.reply}</p>
-                        </div>
-                    `;
+                    const assistantMessage = renderAssistantMessage(data.reply);
                     chatMessages.appendChild(assistantMessage);
                 })
                 .catch(error => {
@@ -203,8 +287,8 @@
                     }
 
                     data.messages.forEach(message => {
-                        const messageElement = document.createElement('div');
                         if (message.sender === 'user') {
+                            const messageElement = document.createElement('div');
                             messageElement.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-6';
                             messageElement.innerHTML = `
                                 <div class="flex items-start space-x-3">
@@ -216,22 +300,11 @@
                                     </div>
                                 </div>
                             `;
+                            chatMessages.appendChild(messageElement);
                         } else {
-                            messageElement.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
-                            messageElement.innerHTML = `
-                                <div class="flex items-start space-x-3 mb-4">
-                                    <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="space-y-6">
-                                    <p class="text-lg">${message.content}</p>
-                                </div>
-                            `;
+                            const assistantMessage = renderAssistantMessage(message.content);
+                            chatMessages.appendChild(assistantMessage);
                         }
-                        chatMessages.appendChild(messageElement);
                     });
                 });
         }
