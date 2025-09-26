@@ -310,6 +310,10 @@
                             chatMessages.appendChild(assistantMessage);
                         }
                     });
+
+                    // Scroll to the bottom of the chat messages
+                    const chatContainer = document.getElementById('chat-messages');
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 });
         }
 
