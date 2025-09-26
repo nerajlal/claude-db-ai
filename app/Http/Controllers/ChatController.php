@@ -6,6 +6,7 @@ use App\Models\Chat;
 use App\Models\Message;
 use Gemini\Data\Content;
 use Gemini\Enums\Role;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -53,12 +54,15 @@ class ChatController extends Controller
         }
 
         try {
+            $guzzleClient = new Client([
+                'verify' => false,
+            ]);
+
             $client = Gemini::factory()
                 ->withApiKey(env('GEMINI_API_KEY'))
-                ->withHttpOptions([
-                    'verify' => false,
-                ])
+                ->withHttpClient($guzzleClient)
                 ->make();
+
             $chatInstance = $client->geminiPro()->startChat(history: $history);
             $response = $chatInstance->sendMessage($messageContent);
             $reply = $response->text();
