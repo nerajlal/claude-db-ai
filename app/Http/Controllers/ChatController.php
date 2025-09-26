@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Gemini;
 
 class ChatController extends Controller
@@ -40,6 +41,18 @@ class ChatController extends Controller
         }
 
         $historyMessages = $chat->messages()->orderBy('created_at')->get();
+        $history = [];
+        $file = $chat->files()->first();
+
+        if ($file) {
+            $dbSchema = Storage::get($file->path);
+            $systemPrompt = "You are a specialized SQL assistant. Your knowledge is strictly limited to the following database schema. Do not answer any questions that are not related to this schema. If a question is outside of this scope, you must respond with the exact phrase: \"That's beyond my scope. Try asking something about the database you uploaded.\"\n\nHere is the database schema:\n\n---\n\n{$dbSchema}\n\n---";
+
+            // Add the system prompt as the first message from the 'user'
+            $history[] = Content::parse(part: $systemPrompt, role: Role::USER);
+            // Add a canned response from the model to acknowledge the instruction
+            $history[] = Content::parse(part: 'Yes, I understand. I will only answer questions about the provided database schema.', role: Role::MODEL);
+        }
 
         Message::create([
             'chat_id' => $chatId,
@@ -47,7 +60,6 @@ class ChatController extends Controller
             'content' => $messageContent,
         ]);
 
-        $history = [];
         foreach ($historyMessages as $message) {
             $role = $message->sender === 'user' ? Role::USER : Role::MODEL;
             $history[] = Content::parse(part: $message->content, role: $role);
