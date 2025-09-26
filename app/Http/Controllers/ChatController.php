@@ -26,18 +26,18 @@ class ChatController extends Controller
         $chatId = $request->input('chat_id');
         $user = Auth::user();
 
-        $isNewChat = !$chatId;
-        if ($isNewChat) {
-            $chat = Chat::create([
-                'user_id' => $user->id,
-                'name' => substr($messageContent, 0, 20)
-            ]);
-            $chatId = $chat->id;
-        } else {
-            $chat = Chat::findOrFail($chatId);
-            if ($chat->user_id !== $user->id) {
-                return response()->json(['error' => 'Unauthorized'], 403);
-            }
+        if (!$chatId) {
+            return response()->json(['error' => 'Please upload a database file first to start a new chat.'], 422);
+        }
+
+        $chat = Chat::with('files')->findOrFail($chatId);
+
+        if ($chat->user_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        if ($chat->files->isEmpty()) {
+            return response()->json(['error' => 'Please upload a database file for this chat before sending messages.'], 422);
         }
 
         $historyMessages = $chat->messages()->orderBy('created_at')->get();
@@ -89,17 +89,7 @@ class ChatController extends Controller
             'content' => $reply,
         ]);
 
-        $responseData = ['reply' => $reply];
-        if ($isNewChat) {
-            $responseData['chat'] = [
-                'id' => $chat->id,
-                'name' => $chat->name
-            ];
-        } else {
-            $responseData['chat_id'] = $chatId;
-        }
-
-        return response()->json($responseData);
+        return response()->json(['reply' => $reply, 'chat_id' => $chatId]);
     }
 
     public function getChatHistory($chatId)

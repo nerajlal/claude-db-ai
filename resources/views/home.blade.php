@@ -233,35 +233,22 @@
                     },
                     body: JSON.stringify({ message: message, chat_id: currentChatId })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.chat && !currentChatId) {
-                        currentChatId = data.chat.id;
-                        const newChatItem = document.createElement('div');
-                        newChatItem.className = 'flex items-center justify-between p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer relative';
-                        newChatItem.setAttribute('x-data', '{ open: false }');
-                        newChatItem.innerHTML = `
-                            <span class="flex-grow" onclick="loadChatHistory(${data.chat.id})">${data.chat.name}</span>
-                            <button class="ml-2" @click="open = !open">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                </svg>
-                            </button>
-                            <div x-show="open" @click.away="open = false" class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                <div class="py-1">
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="renameChat(${data.chat.id}, event)">Rename</a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="deleteChat(${data.chat.id}, event)">Delete</a>
-                                </div>
-                            </div>
-                        `;
-                        document.querySelector('.space-y-1').prepend(newChatItem);
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error) });
                     }
-
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.chat_id && !currentChatId) {
+                        currentChatId = data.chat_id;
+                    }
                     const assistantMessage = renderAssistantMessage(data.reply);
                     chatMessages.appendChild(assistantMessage);
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert(error.message);
                 });
             }
         }
