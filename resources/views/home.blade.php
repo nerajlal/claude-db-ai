@@ -39,6 +39,55 @@
         let currentChatId = null;
         let chatHasFile = false;
 
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.innerHTML = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                html.classList.add('dark');
+                themeIcon.innerHTML = '☀️';
+                themeText.textContent = 'Light';
+            }
+        }
+
+        function toggleShareDropdown() {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        function shareOption(type) {
+            const dropdown = document.getElementById('shareDropdown');
+            dropdown.classList.add('hidden');
+
+            switch(type) {
+                case 'link':
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                    break;
+                case 'twitter':
+                    window.open('https://twitter.com/intent/tweet?text=Check out this SQL assistant!&url=' + encodeURIComponent(window.location.href), '_blank');
+                    break;
+                case 'linkedin':
+                    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
+                    break;
+                case 'email':
+                    window.location.href = 'mailto:?subject=SQL Assistant&body=Check out this helpful SQL assistant: ' + window.location.href;
+                    break;
+                case 'export':
+                    alert('Exporting queries... (Feature coming soon)');
+                    break;
+            }
+        }
+
         function toggleQueryOutput(queryId) {
             const outputDiv = document.getElementById(queryId);
             const arrow = document.querySelector(`[onclick="toggleQueryOutput('${queryId}')"] svg`);
@@ -411,6 +460,31 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
+
+            const upgradeButton = document.getElementById('upgradeProButton');
+            const closeModalButton = document.getElementById('closeModal');
+            const upgradeModal = document.getElementById('upgradeModal');
+
+            if (upgradeButton) {
+                upgradeButton.addEventListener('click', () => {
+                    upgradeModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', () => {
+                    upgradeModal.classList.add('hidden');
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const shareButton = document.querySelector('[onclick="toggleShareDropdown()"]');
+                const dropdown = document.getElementById('shareDropdown');
+                if (shareButton && dropdown && !shareButton.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
         });
     </script>
 @endsection
