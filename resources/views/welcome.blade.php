@@ -55,9 +55,9 @@
                     <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
                     <a href="#demo" class="text-gray-300 hover:text-white transition-colors">Demo</a>
                     <a href="#pricing" class="text-gray-300 hover:text-white transition-colors">Pricing</a>
-                    <button class="bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105">
+                    <a href="{{ route('login') }}" class="bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105">
                         Get Started
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -91,12 +91,12 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <button class="group w-full sm:w-auto bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
+                    <a href="{{ route('login') }}" class="group w-full sm:w-auto bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
                         Start Writing SQL
                         <svg class="inline-block ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                         </svg>
-                    </button>
+                    </a>
                     <button class="w-full sm:w-auto border border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-200">
                         Watch Demo
                     </button>
@@ -235,9 +235,9 @@
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button class="w-full sm:w-auto bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
+                <a href="{{ route('login') }}" class="w-full sm:w-auto bg-gradient-to-br from-green-400 to-blue-500 hover:bg-gradient-to-bl text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
                     Start Free Trial
-                </button>
+                </a>
                 <button class="w-full sm:w-auto border border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-200">
                     View Pricing
                 </button>

@@ -34,7 +34,7 @@ class LoginController extends Controller
         if (Auth::attempt(['phone' => $request->phone, 'password' => $request->password])) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            return redirect()->intended('/home');
         }
 
         return back()->withErrors([
@@ -56,6 +56,6 @@ class LoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/');
     }
 }
