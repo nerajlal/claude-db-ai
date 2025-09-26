@@ -7,8 +7,9 @@ use App\Models\Message;
 use Gemini\Data\Content;
 use Gemini\Enums\Role;
 use Illuminate\Http\Request;
-use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Gemini;
 
 class ChatController extends Controller
 {
@@ -52,10 +53,12 @@ class ChatController extends Controller
         }
 
         try {
-            $chatInstance = Gemini::geminiPro()->startChat(history: $history);
+            $client = Gemini::client(config('gemini.api_key'));
+            $chatInstance = $client->geminiPro()->startChat(history: $history);
             $response = $chatInstance->sendMessage($messageContent);
             $reply = $response->text();
         } catch (\Exception $e) {
+            Log::error($e);
             $reply = 'I was unable to get a response. Please check your Gemini API key and server configuration.';
         }
 
