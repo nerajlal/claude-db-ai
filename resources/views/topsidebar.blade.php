@@ -74,7 +74,7 @@
         </div>
 
         <!-- Upgrade to Pro Modal -->
-        <div id="upgradeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <div id="upgradeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
             <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Upgrade to Pro</h3>
@@ -100,7 +100,7 @@
         </div>
 
         <!-- Rename Chat Modal -->
-        <div id="renameModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <div id="renameModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
             <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Rename Chat</h3>
@@ -120,7 +120,7 @@
         </div>
 
         <!-- Delete Chat Modal -->
-        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
             <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Delete Chat</h3>
