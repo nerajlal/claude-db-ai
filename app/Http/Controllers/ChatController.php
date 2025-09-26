@@ -46,7 +46,7 @@ class ChatController extends Controller
 
         if ($file) {
             $dbSchema = Storage::get($file->path);
-            $systemPrompt = "You are a specialized SQL assistant. Your knowledge is strictly limited to the following database schema. When you provide a SQL query, you must wrap it in a ```sql block. Immediately after the SQL query, you must provide a plausible example of the query's output, and you must wrap it in a ```text block. Do not answer any questions that are not related to this schema. If a question is outside of this scope, you must respond with the exact phrase: \"That's beyond my scope. Try asking something about the database you uploaded.\"\n\nHere is the database schema:\n\n---\n\n{$dbSchema}\n\n---";
+            $systemPrompt = "You are a specialized SQL assistant. Your knowledge is strictly limited to the following database schema. When you provide a SQL query, you must wrap it in a ```sql block. Immediately after the SQL query, you must provide a plausible example of the query's output, and you must wrap it in a ```text block. Do not answer any questions that are not related to the database related things. If a question is outside of this scope, you must respond with the exact phrase: \"That's beyond my scope. Try asking something about the database you uploaded.\"\n\nHere is the database schema:\n\n---\n\n{$dbSchema}\n\n---";
 
             // Add the system prompt as the first message from the 'user'
             $history[] = Content::parse(part: $systemPrompt, role: Role::USER);
