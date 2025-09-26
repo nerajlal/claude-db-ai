@@ -72,37 +72,22 @@
             const messageElement = document.createElement('div');
             messageElement.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
 
-            const combinedRegex = /```sql\n([\s\S]+?)```|```text\n([\s\S]+?)```/g;
-            if (!combinedRegex.test(content)) {
-                messageElement.innerHTML = `
-                    <div class="flex items-start space-x-3 mb-4">
-                        <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-                        </div>
-                    </div>
-                    <div class="space-y-6"><p class="text-lg" style="white-space: pre-wrap;">${content.replace(/</g, "&lt;")}</p></div>
-                `;
-                return messageElement;
-            }
+            const combinedRegex = /```sql\n([\s\S]+?)```[\s\n]*```text\n([\s\S]+?)```|```sql\n([\s\S]+?)```|```text\n([\s\S]+?)```|([^\`]+)/g;
 
-            combinedRegex.lastIndex = 0;
             let htmlContent = '';
-            let lastIndex = 0;
             let match;
-            let queries = [];
 
             while ((match = combinedRegex.exec(content)) !== null) {
-                if (match.index > lastIndex) {
-                     htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex, match.index).replace(/</g, "&lt;")}</div>`;
-                }
+                const [fullMatch, sqlWithOutput, outputForSql, sqlOnly, textOnly, plainText] = match;
 
-                if (match[1]) { // SQL block
-                    const sqlCode = match[1];
-                    const sanitizedSqlCode = sqlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-                    queries.push({ sql: sanitizedSqlCode, output: null });
+                if (sqlWithOutput) {
+                    const sanitizedSqlCode = sqlWithOutput.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                    const sanitizedOutput = outputForSql.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                    const uniqueId = `query-output-${Date.now()}-${Math.random()}`;
+
                     htmlContent += `
                         <div class="code-block bg-black rounded-lg p-4 relative my-2">
-                            <div class="flex items-center justify-between mb-3">
+                             <div class="flex items-center justify-between mb-3">
                                 <span class="text-xs text-gray-400">sql</span>
                                 <button onclick="copyCode(this)" class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors duration-200">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -111,21 +96,6 @@
                             </div>
                             <pre><code class="text-sm">${sanitizedSqlCode}</code></pre>
                         </div>
-                    `;
-                } else if (match[2]) { // Text block
-                    if (queries.length > 0 && queries[queries.length - 1].output === null) {
-                        queries[queries.length - 1].output = match[2].trim();
-                    }
-                }
-                lastIndex = combinedRegex.lastIndex;
-            }
-
-            // Append the collapsible output sections
-            queries.forEach((q, index) => {
-                if (q.output) {
-                    const uniqueId = `query-output-${Date.now()}-${index}`;
-                    const sanitizedOutput = q.output.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    htmlContent += `
                         <div class="my-2 text-base">
                             <button onclick="toggleQueryOutput('${uniqueId}')" class="flex items-center justify-between w-full p-2 text-sm font-medium text-left text-gray-600 dark:text-gray-300 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
                                 <span class="font-semibold">Show/Hide Example Output</span>
@@ -136,11 +106,26 @@
                             </div>
                         </div>
                     `;
+                } else if (sqlOnly) {
+                     const sanitizedSqlCode = sqlOnly.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                     htmlContent += `
+                        <div class="code-block bg-black rounded-lg p-4 relative my-2">
+                             <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs text-gray-400">sql</span>
+                                <button onclick="copyCode(this)" class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors duration-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    <span>Copy code</span>
+                                </button>
+                            </div>
+                            <pre><code class="text-sm">${sanitizedSqlCode}</code></pre>
+                        </div>
+                    `;
+                } else if (textOnly) {
+                    const sanitizedText = textOnly.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                     htmlContent += `<pre class="my-2 p-4 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-lg"><code>${sanitizedText}</code></pre>`;
+                } else if (plainText) {
+                    htmlContent += `<div style="white-space: pre-wrap;">${plainText.replace(/</g, "&lt;")}</div>`;
                 }
-            });
-
-            if (lastIndex < content.length) {
-                htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex).replace(/</g, "&lt;")}</div>`;
             }
 
             messageElement.innerHTML = `
@@ -149,7 +134,7 @@
                         <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                     </div>
                 </div>
-                <div class="space-y-6 text-lg">${htmlContent}</div>
+                <div class="space-y-6 text-lg">${htmlContent || `<p class="text-lg" style="white-space: pre-wrap;">${content.replace(/</g, "&lt;")}</p>`}</div>
             `;
 
             return messageElement;
