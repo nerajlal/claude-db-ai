@@ -86,7 +86,7 @@
                 </p>
                 
                 <p class="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
-                    The ChatGPT for SQL. Write, optimize, debug, and learn SQL with the power of AI. 
+                    The AI for SQL. Write, optimize, debug, and learn SQL with the power of AI. 
                     From simple queries to complex database operations - we've got you covered.
                 </p>
                 
