@@ -74,25 +74,27 @@
         </div>
 
         <!-- Upgrade to Pro Modal -->
-        <div id="upgradeModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-            <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
-                <div class="mt-3 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Upgrade to Pro</h3>
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Upgrade and get these premium features:
+        <div id="upgradeModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="relative mx-auto p-8 border-0 w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-chat-sidebar">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Upgrade to Pro</h3>
+                    <div class="mt-4 px-4 py-3">
+                        <p class="text-md text-gray-600 dark:text-gray-400">
+                            Unlock premium features and enhance your SQL workflow.
                         </p>
-                        <ul class="list-disc text-left mt-4">
-                            <li>Unlimited file uploads</li>
-                            <li>Priority support</li>
-                            <li>Access to new features first</li>
-                            <li>No ads</li>
-                            <li>Higher API rate limits</li>
+                        <ul class="list-none text-left mt-6 space-y-3 text-gray-700 dark:text-gray-300">
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited file uploads</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Priority support</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Access to new features first</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>No ads & higher API limits</li>
                         </ul>
                     </div>
-                    <div class="items-center px-4 py-3">
-                        <button id="closeModal" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
-                            Close
+                    <div class="items-center px-4 py-3 space-y-3 mt-4">
+                        <button class="w-full text-md bg-gradient-to-br from-green-400 to-blue-500 px-4 py-3 rounded-lg text-white transition-colors duration-200 font-semibold">
+                            Upgrade Now
+                        </button>
+                        <button id="closeModal" class="px-4 py-2 bg-transparent text-gray-500 dark:text-gray-400 text-sm font-medium rounded-md w-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                            Maybe Later
                         </button>
                     </div>
                 </div>
@@ -100,18 +102,21 @@
         </div>
 
         <!-- Rename Chat Modal -->
-        <div id="renameModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-            <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
-                <div class="mt-3 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Rename Chat</h3>
-                    <div class="mt-2 px-7 py-3">
-                        <input type="text" id="newName" class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" placeholder="Enter new chat name">
+        <div id="renameModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="relative mx-auto p-8 border-0 w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-chat-sidebar">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Rename Chat</h3>
+                    <div class="mt-4 px-4 py-3">
+                        <p class="text-md text-gray-600 dark:text-gray-400 mb-4">
+                            Enter a new name for this chat session.
+                        </p>
+                        <input type="text" id="newName" class="w-full px-4 py-3 bg-gray-100 dark:bg-chat-input border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="New chat name...">
                     </div>
-                    <div class="items-center px-4 py-3">
-                        <button id="saveRename" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            Save
+                    <div class="items-center px-4 py-3 space-y-3 mt-2">
+                        <button id="saveRename" class="w-full text-md bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg text-white transition-colors duration-200 font-semibold">
+                            Save Changes
                         </button>
-                        <button id="closeRenameModal" class="mt-2 px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        <button id="closeRenameModal" class="px-4 py-2 bg-transparent text-gray-500 dark:text-gray-400 text-sm font-medium rounded-md w-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
                             Cancel
                         </button>
                     </div>
@@ -120,20 +125,23 @@
         </div>
 
         <!-- Delete Chat Modal -->
-        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-            <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
-                <div class="mt-3 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Delete Chat</h3>
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="relative mx-auto p-8 border-0 w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-chat-sidebar">
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center mx-auto">
+                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-4">Delete Chat</h3>
+                    <div class="mt-2 px-4 py-3">
+                        <p class="text-md text-gray-600 dark:text-gray-400">
                             Are you sure you want to delete this chat? This action cannot be undone.
                         </p>
                     </div>
-                    <div class="items-center px-4 py-3">
-                        <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
-                            Delete
+                    <div class="items-center px-4 py-3 space-y-3 mt-2">
+                        <button id="confirmDelete" class="w-full text-md bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg text-white transition-colors duration-200 font-semibold">
+                            Yes, Delete It
                         </button>
-                        <button id="closeDeleteModal" class="mt-2 px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        <button id="closeDeleteModal" class="px-4 py-2 bg-transparent text-gray-500 dark:text-gray-400 text-sm font-medium rounded-md w-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
                             Cancel
                         </button>
                     </div>
