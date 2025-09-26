@@ -51,6 +51,14 @@
                 </button>
             </div>
         </form>
+        <div class="text-center">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Not a customer?
+                <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                    Register here
+                </a>
+            </p>
+        </div>
     </div>
 </div>
 @endsection
