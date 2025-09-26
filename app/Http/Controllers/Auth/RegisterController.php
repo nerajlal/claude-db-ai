@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class RegisterController extends Controller
 {
 
-    protected $redirectTo = '/';
+    protected $redirectTo = '/chat';
 
     public function __construct()
     {

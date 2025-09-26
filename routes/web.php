@@ -14,9 +14,13 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
+
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [DbController::class, 'index'])->name('home');
+    Route::get('/chat', [DbController::class, 'index'])->name('home');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
     Route::post('/chat', [ChatController::class, 'chat'])->name('chat');
     Route::get('/chat/history/{chatId}', [ChatController::class, 'getChatHistory'])->name('chat.history');
