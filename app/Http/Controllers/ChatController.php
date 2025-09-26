@@ -53,7 +53,7 @@ class ChatController extends Controller
         }
 
         try {
-            $client = Gemini::client(config('gemini.api_key'));
+            $client = Gemini::client(env('GEMINI_API_KEY'));
             $chatInstance = $client->geminiPro()->startChat(history: $history);
             $response = $chatInstance->sendMessage($messageContent);
             $reply = $response->text();
