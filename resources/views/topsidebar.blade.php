@@ -104,6 +104,9 @@
         <!-- Rename Chat Modal -->
         <div id="renameModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
             <div class="relative mx-auto p-8 border-0 w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-chat-sidebar">
+                <button id="closeRenameModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
                 <div class="text-center">
                     <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Rename Chat</h3>
                     <div class="mt-4 px-4 py-3">
@@ -112,12 +115,9 @@
                         </p>
                         <input type="text" id="newName" class="w-full px-4 py-3 bg-gray-100 dark:bg-chat-input border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="New chat name...">
                     </div>
-                    <div class="items-center px-4 py-3 space-y-3 mt-2">
+                    <div class="items-center px-4 py-3 mt-4">
                         <button id="saveRename" class="w-full text-md bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg text-white transition-colors duration-200 font-semibold">
                             Save Changes
-                        </button>
-                        <button id="closeRenameModal" class="px-4 py-2 bg-transparent text-gray-500 dark:text-gray-400 text-sm font-medium rounded-md w-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
-                            Cancel
                         </button>
                     </div>
                 </div>
