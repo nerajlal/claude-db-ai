@@ -39,15 +39,15 @@
         let currentChatId = null;
         let chatHasFile = false;
 
-        function toggleSqlQuery(queryId) {
-            const codeDiv = document.getElementById(queryId);
-            const arrow = document.querySelector(`[onclick="toggleSqlQuery('${queryId}')"] svg`);
+        function toggleQueryOutput(queryId) {
+            const outputDiv = document.getElementById(queryId);
+            const arrow = document.querySelector(`[onclick="toggleQueryOutput('${queryId}')"] svg`);
 
-            if (codeDiv.style.display === 'none' || codeDiv.style.display === '') {
-                codeDiv.style.display = 'block';
+            if (outputDiv.style.display === 'none' || outputDiv.style.display === '') {
+                outputDiv.style.display = 'block';
                 arrow.style.transform = 'rotate(180deg)';
             } else {
-                codeDiv.style.display = 'none';
+                outputDiv.style.display = 'none';
                 arrow.style.transform = 'rotate(0deg)';
             }
         }
@@ -72,8 +72,8 @@
             const messageElement = document.createElement('div');
             messageElement.className = 'bg-gray-50 dark:bg-gray-800 rounded-lg p-6';
 
-            const sqlRegex = /```sql\n([\s\S]+?)```/g;
-            if (!sqlRegex.test(content)) {
+            const combinedRegex = /```sql\n([\s\S]+?)```|```text\n([\s\S]+?)```/g;
+            if (!combinedRegex.test(content)) {
                 messageElement.innerHTML = `
                     <div class="flex items-start space-x-3 mb-4">
                         <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-sm flex items-center justify-center flex-shrink-0">
@@ -85,40 +85,60 @@
                 return messageElement;
             }
 
-            sqlRegex.lastIndex = 0;
+            combinedRegex.lastIndex = 0;
             let htmlContent = '';
             let lastIndex = 0;
             let match;
+            let queries = [];
 
-            while ((match = sqlRegex.exec(content)) !== null) {
-                // Add the text before the match
+            while ((match = combinedRegex.exec(content)) !== null) {
                 if (match.index > lastIndex) {
-                    htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex, match.index).replace(/</g, "&lt;")}</div>`;
+                     htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex, match.index).replace(/</g, "&lt;")}</div>`;
                 }
 
-                const sqlCode = match[1];
-                const sanitizedSqlCode = sqlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-                const uniqueId = 'sql-query-' + Date.now() + Math.random().toString(36).substr(2, 9);
-
-                htmlContent += `
-                    <div class="my-2 text-base">
-                        <button onclick="toggleSqlQuery('${uniqueId}')" class="flex items-center justify-between w-full p-2 text-sm font-medium text-left text-gray-600 dark:text-gray-300 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
-                            <span class="font-semibold">Show/Hide SQL Query</span>
-                            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" style="transform: rotate(0deg);" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10L12 15L17 10H7Z"/></svg>
-                        </button>
-                        <div id="${uniqueId}" style="display: none;" class="code-block mt-2 p-4 bg-black text-white rounded-lg overflow-x-auto relative">
-                            <button onclick="copyCode(this)" class="absolute top-2 right-2 flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                <span>Copy code</span>
-                            </button>
+                if (match[1]) { // SQL block
+                    const sqlCode = match[1];
+                    const sanitizedSqlCode = sqlCode.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+                    queries.push({ sql: sanitizedSqlCode, output: null });
+                    htmlContent += `
+                        <div class="code-block bg-black rounded-lg p-4 relative my-2">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs text-gray-400">sql</span>
+                                <button onclick="copyCode(this)" class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors duration-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    <span>Copy code</span>
+                                </button>
+                            </div>
                             <pre><code class="text-sm">${sanitizedSqlCode}</code></pre>
                         </div>
-                    </div>
-                `;
-                lastIndex = sqlRegex.lastIndex;
+                    `;
+                } else if (match[2]) { // Text block
+                    if (queries.length > 0 && queries[queries.length - 1].output === null) {
+                        queries[queries.length - 1].output = match[2].trim();
+                    }
+                }
+                lastIndex = combinedRegex.lastIndex;
             }
 
-            // Add any remaining text after the last match
+            // Append the collapsible output sections
+            queries.forEach((q, index) => {
+                if (q.output) {
+                    const uniqueId = `query-output-${Date.now()}-${index}`;
+                    const sanitizedOutput = q.output.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    htmlContent += `
+                        <div class="my-2 text-base">
+                            <button onclick="toggleQueryOutput('${uniqueId}')" class="flex items-center justify-between w-full p-2 text-sm font-medium text-left text-gray-600 dark:text-gray-300 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
+                                <span class="font-semibold">Show/Hide Example Output</span>
+                                <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" style="transform: rotate(0deg);" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10L12 15L17 10H7Z"/></svg>
+                            </button>
+                            <div id="${uniqueId}" style="display: none;" class="mt-2 p-4 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-lg overflow-x-auto">
+                                <pre><code>${sanitizedOutput}</code></pre>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
             if (lastIndex < content.length) {
                 htmlContent += `<div style="white-space: pre-wrap;">${content.substring(lastIndex).replace(/</g, "&lt;")}</div>`;
             }
@@ -134,7 +154,6 @@
 
             return messageElement;
         }
-
 
         function handleFileUpload(event) {
             const file = event.target.files[0];
