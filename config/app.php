@@ -168,7 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        // Gemini\Laravel\GeminiServiceProvider::class,
+        Gemini\Laravel\GeminiServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -183,7 +183,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'Gemini' => Gemini\Laravel\Facades\Gemini::class,
+        'Gemini' => Gemini\Laravel\Facades\Gemini::class,
     ])->toArray(),
 
 ];
